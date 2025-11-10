@@ -1,3 +1,4 @@
+import LoginForm from "@/components/login-form"
 
 const LoginPage = () => {
   return (
@@ -9,7 +10,7 @@ const LoginPage = () => {
             Enter your credentials to access your account
           </p>
         </div>
-        {/* <LoginForm /> component will called after create */}
+        <LoginForm />
       </div>
     </div>
   )
