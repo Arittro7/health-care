@@ -7,7 +7,7 @@ import { Button } from './ui/button'
 import { useActionState } from 'react'
 import { loginUser } from '@/services/auth/loginUser'
 
-const LoginForm = () => {
+const LoginForm = ({redirect} : {redirect?: string}) => {
   const [state, formAction, isPending] = useActionState(loginUser , null)
   console.log(state);
 
@@ -22,6 +22,10 @@ const LoginForm = () => {
 
   return (
     <form action={formAction}>
+      {/* use the redirect as a input field also I will check the input field on loginUser.ts*/}
+      {
+        redirect && <input type='hidden' name='redirect' value={redirect} />
+      }
        <FieldGroup>
         <div className="grid grid-cols-1 gap-4">
           {/* Email */}
