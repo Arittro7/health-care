@@ -1,12 +1,15 @@
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
-import { getDefaultDashboardRoute, isValidRedirectForRole, UserRole } from "@/lib/auth-utils";
+import {
+  getDefaultDashboardRoute,
+  isValidRedirectForRole,
+  UserRole,
+} from "@/lib/auth-utils";
 import { parse } from "cookie";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import z from "zod";
+import { setCookie } from "./tokenHandlers";
 
 const loginValidationZodSchema = z.object({
   email: z.email({
@@ -62,6 +65,8 @@ export const loginUser = async (
       },
     });
 
+    const result = await res.json() //m 68-1  
+
     const setCookieHeaders = res.headers.getSetCookie();
 
     // I will check the cookie
@@ -97,9 +102,9 @@ export const loginUser = async (
     }
 
     // set the cookies [cookies from next/headers]
-    const cookieStore = await cookies();
-
-    cookieStore.set("accessToken", accessTokenObject.accessToken, {
+    // const cookieStore = await cookies(); remove with tokenHandler file
+    // replace cookieStore with setCookie from tokenHandler and add await
+    await setCookie("accessToken", accessTokenObject.accessToken, {
       secure: true,
       httpOnly: true,
       maxAge: parseInt(accessTokenObject["Max-Age"]) || 1000 * 60 * 60, //maxAge number from my backend
@@ -107,7 +112,7 @@ export const loginUser = async (
       sameSite: accessTokenObject["SameSite"] || "none",
     });
 
-    cookieStore.set("refreshToken", refreshTokenObject.refreshToken, {
+    await setCookie("refreshToken", refreshTokenObject.refreshToken, {
       secure: true,
       httpOnly: true,
       maxAge:
@@ -119,9 +124,9 @@ export const loginUser = async (
     console.log(setCookieHeaders, "setCookie");
 
     console.log({
-      res
+      res,
     });
-// ------------ redirect
+    // ------------ redirect
     const verifiedToken: JwtPayload | string = jwt.verify(
       accessTokenObject.accessToken,
       process.env.JWT_SECRET as string
@@ -132,25 +137,30 @@ export const loginUser = async (
     }
     const userRole: UserRole = verifiedToken.role;
 
+    if(!result.success){ //m 68-1
+      throw new Error(result.message || "login failed")
+    } 
+
     // redirect from next/navigation and redirect according to user
     // const redirectPath = redirectTo ? redirectTo.toString() : getDefaultDashboardRoute(userRole)
 
-
-    if(redirectTo){
-      const requestedPath = redirectTo.toString()
-      if(isValidRedirectForRole(requestedPath, userRole)){
-        redirect(requestedPath)
-      }else{
-        redirect(getDefaultDashboardRoute(userRole))
+    if (redirectTo) {
+      const requestedPath = redirectTo.toString();
+      if (isValidRedirectForRole(requestedPath, userRole)) {
+        redirect(`${requestedPath}?loggedIn=true`);
+      } else {
+        redirect(`${getDefaultDashboardRoute(userRole)}?loggedIn=true`);
       }
+    } else {
+      redirect(`${getDefaultDashboardRoute(userRole)}?loggedIn=true`);
     }
 
     // return result;
-  } catch (error : any) {
-    if(error?.digest?.startsWith('NEXT_REDIRECT')){
-      throw error
+  } catch (error: any) {
+    if (error?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw error;
     }
     console.log(error);
-    return { error: "Login Failed" };
+    return { success: false, message: `${process.env.NODE_ENV === "development" ? error.message : "Login Failed. Please provide valid email & password"}`};
   }
 };

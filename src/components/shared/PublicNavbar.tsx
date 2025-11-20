@@ -13,8 +13,10 @@ import {
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Menu } from "lucide-react";
+import { getCookie } from "@/services/auth/tokenHandlers";
+import LogoutButton from "./LogoutButton";
 
-const PublicNavbar = () => {
+const PublicNavbar = async () => {
   const navItems = [
     { href: "#", label: "Consultation" },
     { href: "#", label: "Health Plans" },
@@ -22,6 +24,8 @@ const PublicNavbar = () => {
     { href: "#", label: "Diagnostics" },
     { href: "#", label: "NGOs" },
   ];
+
+  const accessToken = await getCookie("accessToken");
 
   return (
     <header className="sticky top-0 z-50 flex h-16 w-full items-center justify-around bg-background/95 px-4 shadow">
@@ -48,9 +52,16 @@ const PublicNavbar = () => {
         </nav>
 
         <div className="hidden md:flex items-center space-x-2">
-          <Link href="/login">
+          {/* <Link href="/login">
             <Button className="cursor-pointer">Login</Button>
-          </Link>
+          </Link> */}
+          {accessToken ? (
+            <LogoutButton />
+          ) : (
+            <Link href="/login">
+              <Button className="cursor-pointer">Login</Button>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -58,7 +69,9 @@ const PublicNavbar = () => {
       <div className="md:hidden">
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline"><Menu/></Button>
+            <Button variant="outline">
+              <Menu />
+            </Button>
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>

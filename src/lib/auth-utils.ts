@@ -1,5 +1,3 @@
-// 📂src\lib\auth-utils.ts
-
 export type UserRole = "ADMIN" | "DOCTOR" | "PATIENT"
 
 // declare type for route list
@@ -25,6 +23,7 @@ export const adminProtectedRoutes : RouteConfig ={
   exact:[],
   patterns:[/^\/admin/] //route starting with /admin/* only protected for admin
 }
+
 export const patientProtectedRoutes : RouteConfig ={
   exact:[],
   patterns:[/^\/dashboard/] //route starting with /dashboard/* only protected for patient

@@ -2,6 +2,7 @@
 "use server";
 
 import z from "zod";
+import { loginUser } from "./loginUser";
 
 const registerValidationZodSchema = z
   .object({
@@ -73,13 +74,25 @@ export const registerPatient = async (_currentState: any,formData: any): Promise
         method: "POST",
         body: newFormData,
       }
-    ).then((res) => res.json());
+    )
+    const result = await res.json()
 
     console.log(res, "res");
 
-    return res;
-  } catch (error) {
+    if(result.success){
+      await loginUser(_currentState, formData) 
+    }
+
+    return result;
+
+    // add error digest to handle next redirect
+
+  } catch (error: any) {
+    if (error?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw error;
+    }
     console.log(error);
-    return { error: "Registration failed" };
+    return { success: false, message: `${process.env.NODE_ENV === "development" ? error.message : "Login Failed. Please provide valid email & password"}`};
   }
 };
+
