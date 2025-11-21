@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
-import { UserInfo } from "@/types/User.interface";
+import { UserInfo } from "@/types/user.interface";
 import { getCookie } from "./tokenHandlers";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
@@ -20,6 +20,7 @@ export const getUserInfo = async (): Promise<UserInfo | null> => {
     }
 
     const userInfo: UserInfo = {
+      name: verifiedToken.name || "Unknown User",
       email: verifiedToken.email,
       role: verifiedToken.role
     }
