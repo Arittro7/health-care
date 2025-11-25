@@ -19,7 +19,7 @@ const RefreshButton = ({
   const [isPending, startTransition] = useTransition();
 
   const handleRefresh = () => {
-    startTransition(() => {
+    startTransition(() => { //it will render specific ui portion instead of full tab
       router.refresh();
     });
   };
