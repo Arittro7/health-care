@@ -7,23 +7,10 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from "./ui/field"
 import { Input } from "./ui/input"
 import { registerPatient } from "@/services/auth/registerPatient"
 import { toast } from "sonner"
+import InputFieldError from "./shared/InputFieldError"
 
  const RegisterForm = () => {
   const [state, formAction, isPending] = useActionState(registerPatient ,null)
-
-  const getFieldError = (fieldName:string) => {
-    if(state && state.errors) {
-      const error = state.errors.find((err: any) => err.field === fieldName)
-      if(error){
-        return error.message
-      }
-      else{
-        return null
-      }
-    }else{
-      return null
-    }
-  }
 
   useEffect(() => {
     if(state && !state.success && state.message){
@@ -46,13 +33,9 @@ import { toast } from "sonner"
             placeholder="John Doe"
             // required remove req as zod will handle this
             />
-            
-            {getFieldError("name") && (
-            <FieldDescription className='text-red-500'>
-              {getFieldError("name")}
-            </FieldDescription>
-          )}
+            <InputFieldError field="name" state={state} />
           </Field>
+          
           {/* Address */}
           <Field>
             <FieldLabel htmlFor="address">Address</FieldLabel>
@@ -62,11 +45,8 @@ import { toast } from "sonner"
               type="text"
               placeholder="123 Main St"
             />
-            {getFieldError("address") && (
-            <FieldDescription className='text-red-500'>
-              {getFieldError("address")}
-            </FieldDescription>
-          )}
+          <InputFieldError field="address" state={state} />
+
           </Field>
           {/* Email */}
           <Field>
@@ -77,21 +57,16 @@ import { toast } from "sonner"
               type="email"
               placeholder="m@example.com"
             />
-            {getFieldError("email") && (
-            <FieldDescription className='text-red-500'>
-              {getFieldError("email")}
-            </FieldDescription>
-          )}
+          <InputFieldError field="email" state={state} />
+
           </Field>
           {/* Password */}
           <Field>
             <FieldLabel htmlFor="password">Password</FieldLabel>
             <Input id="password" name="password" type="password" />
-            {getFieldError("password") && (
-            <FieldDescription className='text-red-500'>
-              {getFieldError("password")}
-            </FieldDescription>
-          )}
+          
+          <InputFieldError field="password" state={state} />
+
           </Field>
           {/* Confirm Password */}
           <Field className="md:col-span-2">
@@ -101,11 +76,8 @@ import { toast } from "sonner"
               name="confirmPassword"
               type="password"
             />
-            {getFieldError("confirmPassword") && (
-            <FieldDescription className='text-red-500'>
-              {getFieldError("password")}
-            </FieldDescription>
-          )}
+          <InputFieldError field="confirmPassword" state={state} />
+          
           </Field>
         </div>
         <FieldGroup className="mt-4">

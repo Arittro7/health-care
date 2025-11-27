@@ -3,6 +3,8 @@
 
 import z from "zod";
 import { loginUser } from "./loginUser";
+import { serverFetch } from "@/lib/server-fetch";
+import { zodValidator } from "@/lib/zodValidator";
 
 const registerValidationZodSchema = z
   .object({
@@ -29,7 +31,7 @@ const registerValidationZodSchema = z
 
 export const registerPatient = async (_currentState: any,formData: any): Promise<any> => {
   try {
-    const validationData = {
+    const payload = { // ❌validationData ✅payload
       name: formData.get("name"),
       address: formData.get("address"),
       email: formData.get("email"),
@@ -37,30 +39,18 @@ export const registerPatient = async (_currentState: any,formData: any): Promise
       confirmPassword: formData.get("confirmPassword"),
     };
 
-    const validatedFields =
-      registerValidationZodSchema.safeParse(validationData);
-
-    console.log(validatedFields, "val");
-
-    if (!validatedFields.success) {
-      return {
-        success: false,
-        errors: validatedFields.error.issues.map((issue) => {
-          return {
-            field: issue.path[0],
-            message: issue.message,
-          };
-        }),
-      };
+    if(zodValidator(payload, registerValidationZodSchema).success === false){
+      return zodValidator(payload, registerValidationZodSchema)
     }
 
+    const validatedPayload : any = zodValidator(payload, registerValidationZodSchema).data
+
     const registerData = {
-      // convert formData according to backend
-      password: formData.get("password"),
+      password: validatedPayload.password,
       patient: {
-        name: formData.get("name"),
-        email: formData.get("email"),
-        address: formData.get("address"),
+        name: validatedPayload.name,
+        email: validatedPayload.email,
+        address: validatedPayload.address,
       },
     };
 
@@ -68,11 +58,14 @@ export const registerPatient = async (_currentState: any,formData: any): Promise
 
     newFormData.append("data", JSON.stringify(registerData));
 
-    const res = await fetch(
-      "http://localhost:5000/api/v1/user/create-patient",
+    // check it
+    if(formData.get("file")){
+      newFormData.append("file", formData.get("file")as Blob)
+    }
+
+    const res = await serverFetch.post("http://localhost:5000/api/v1/user/create-patient",
       {
-        method: "POST",
-        body: newFormData,
+        body:newFormData
       }
     )
     const result = await res.json()

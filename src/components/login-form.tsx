@@ -1,38 +1,37 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
+"use client";
 
-import { Field, FieldDescription, FieldGroup, FieldLabel } from './ui/field'
-import { Input } from './ui/input'
-import { Button } from './ui/button'
-import { useActionState, useEffect } from 'react'
-import { loginUser } from '@/services/auth/loginUser'
-import { toast } from 'sonner'
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "./ui/field";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { useActionState, useEffect } from "react";
+import { loginUser } from "@/services/auth/loginUser";
+import { toast } from "sonner";
+import InputFieldError from "./shared/InputFieldError";
 
-const LoginForm = ({redirect} : {redirect?: string}) => {
-  const [state, formAction, isPending] = useActionState(loginUser , null)
- 
-  const getFieldError = (fieldName:string) => {
-    if(state && state.errors) {
-      const error = state.errors.find((err: any) => err.field === fieldName)
-      return error.message
-    }else{
-      return null
-    }
-  }
+const LoginForm = ({ redirect }: { redirect?: string }) => {
+  const [state, formAction, isPending] = useActionState(loginUser, null);
+
+  // const getFieldError = (fieldName:string) =>{ //❌remove this portion
+  //   if(state && state.errors) {
+  //     const error = state.errors.find((err: any) => err.field === fieldName)
+  //     return error.message
+  //   }else{
+  //     return null
+  //   }
+  // }
 
   useEffect(() => {
-    if(state && !state.success && state.message){
-      toast.error(state.message)
+    if (state && !state.success && state.message) {
+      toast.error(state.message);
     }
-  },[state])
-  
+  }, [state]);
+
   return (
     <form action={formAction}>
       {/* use the redirect as a input field also I will check the input field on loginUser.ts*/}
-      {
-        redirect && <input type='hidden' name='redirect' value={redirect} />
-      }
-       <FieldGroup>
+      {redirect && <input type="hidden" name="redirect" value={redirect} />}
+      <FieldGroup>
         <div className="grid grid-cols-1 gap-4">
           {/* Email */}
           <Field>
@@ -45,11 +44,7 @@ const LoginForm = ({redirect} : {redirect?: string}) => {
               // required
             />
 
-          {getFieldError("email") && (
-            <FieldDescription className='text-red-500'>
-              {getFieldError("email")}
-            </FieldDescription>
-          )}
+            <InputFieldError field="email" state={state} />
           </Field>
 
           {/* Password */}
@@ -62,12 +57,7 @@ const LoginForm = ({redirect} : {redirect?: string}) => {
               placeholder="Enter your password"
               // required
             />
-
-            {getFieldError("password") && (
-            <FieldDescription className='text-red-500'>
-              {getFieldError("password")}
-            </FieldDescription>
-          )}
+            <InputFieldError field="password" state={state} />
           </Field>
         </div>
         <FieldGroup className="mt-4">
@@ -94,7 +84,7 @@ const LoginForm = ({redirect} : {redirect?: string}) => {
         </FieldGroup>
       </FieldGroup>
     </form>
-  )
-}
+  );
+};
 
-export default LoginForm
+export default LoginForm;
