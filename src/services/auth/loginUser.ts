@@ -12,21 +12,9 @@ import z from "zod";
 import { setCookie } from "./tokenHandlers";
 import { serverFetch } from "@/lib/server-fetch";
 import { zodValidator } from "@/lib/zodValidator";
+import { loginValidationZodSchema } from "@/zod/auth.validation";
 
-const loginValidationZodSchema = z.object({
-  email: z.email({
-    error: "Email is required",
-  }),
-  password: z
-    .string()
-    .nonempty("Password is required")
-    .min(6, {
-      error: "Password must contain at least 6 character",
-    })
-    .max(100, {
-      error: "Password can't exceed 100 character",
-    }),
-});
+
 
 export const loginUser = async (
   _currentState: any,
@@ -49,9 +37,12 @@ export const loginUser = async (
 
     const validatedPayload = zodValidator(payload, loginValidationZodSchema).data
 
-    const res = await serverFetch.post("http://localhost:5000/api/v1/auth/login", {
+    const res = await serverFetch.post("/auth/login", {
       // body: JSON.stringify(loginData)
-      body: JSON.stringify(validatedPayload)
+      body: JSON.stringify(validatedPayload),
+      headers:{
+        "Content-Type":"application/json"
+      }
     });
 
     const result = await res.json()

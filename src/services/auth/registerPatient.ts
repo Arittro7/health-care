@@ -5,29 +5,8 @@ import z from "zod";
 import { loginUser } from "./loginUser";
 import { serverFetch } from "@/lib/server-fetch";
 import { zodValidator } from "@/lib/zodValidator";
+import { registerValidationZodSchema } from "@/zod/auth.validation";
 
-const registerValidationZodSchema = z
-  .object({
-    name: z.string().min(1, { message: "Name is required" }),
-    address: z.string() ,
-    email: z.email({ message: "Valid email is required" }),
-    password: z
-      .string()
-      .min(6, {
-        error: "Password is required and must be at least 6 characters long",
-      })
-      .max(100, {
-        error: "Password must be at most 100 characters long",
-      }),
-    confirmPassword: z.string().min(6, {
-      error:
-        "Confirm Password is required and must be at least 6 characters long",
-    }),
-  })
-  .refine((data: any) => data.password === data.confirmPassword, {
-    error: "Passwords do not match",
-    path: ["confirmPassword"],//as the refine done out side of z.obj that's why I have to use path to marked the target refined field
-  });
 
 export const registerPatient = async (_currentState: any,formData: any): Promise<any> => {
   try {
@@ -63,7 +42,7 @@ export const registerPatient = async (_currentState: any,formData: any): Promise
       newFormData.append("file", formData.get("file")as Blob)
     }
 
-    const res = await serverFetch.post("http://localhost:5000/api/v1/user/create-patient",
+    const res = await serverFetch.post("/user/create-patient",
       {
         body:newFormData
       }

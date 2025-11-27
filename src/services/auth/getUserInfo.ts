@@ -31,16 +31,3 @@ export const getUserInfo = async (): Promise<UserInfo | null> => {
     return null
   }
 };
-
-/* ----------1
-1. As It is a async function I will get Promise which will provide user Info
-2. For User Info I will declare types on 📂src\types\User.interface.ts & Dashboard.interface.ts
-  2.1 Define user interface and set as Promise
-  2.2 I may not get user info thats why I will pass a null 
-3. Call the getCookie function and destructure the accessToken, also through error on failed get access token, Apply try-catch block
-4. I will check using jwt 
-5. Return userInfo using verifiedToken 
-please write in-depth explanation for 4,5 
-
-6. Now I will call this function on DashboardNavbar.tsx
-*/

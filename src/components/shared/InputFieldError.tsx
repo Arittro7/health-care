@@ -3,16 +3,17 @@
 import { getInputFieldError, IInputErrorState } from "@/lib/getInputFieldError";
 import { FieldDescription } from "../ui/field";
 
-interface FieldErrorProps {
+interface InputFieldErrorProps {
   field: string;
   state: IInputErrorState;
 }
 
-const InputFieldError = ({ field, state }: FieldErrorProps) => {
+const InputFieldError = ({ field, state }: InputFieldErrorProps) => {
   if(getInputFieldError(field, state)){
+    return(
     <FieldDescription className="text-red-500">
       {getInputFieldError(field, state)}
-    </FieldDescription>
+    </FieldDescription>)
   }
 
   return null
