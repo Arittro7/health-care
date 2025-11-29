@@ -6,11 +6,8 @@ import { serverFetch } from "@/lib/server-fetch";
 import { zodValidator } from "@/lib/zodValidator";
 import { createSpecialtyZodSchema } from "@/zod/specialties.validation";
 
-//Check backend code of specialties.route.ts for identify the available routes and Here I will create function for all those available routes
 
 export async function createSpecialty(_prevState: any, formData: FormData) {
-  // check backend code of Specialties Validation to identify whats are. Also Its receive data using form as Image added
-
   try {
     const payload = {
       title: formData.get("title") as string,
