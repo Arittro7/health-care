@@ -1,4 +1,3 @@
-//📂src\zod\doctors.validation.ts
 
 import z from "zod";
 
